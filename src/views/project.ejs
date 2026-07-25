@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+<main>
+    <h1><%= project.title %></h1>
+    <p>
+        Hosted by:
+        <a href="/organization/<%= project.organization_id %>"><%= project.organization_name %></a>
+    </p>
+
+    <p><%= project.description %></p>
+
+    <ul>
+        <li><strong>Location:</strong> <%= project.location %></li>
+        <li><strong>Date:</strong> <%= project.date %></li>
+    </ul>
+
+    <% if (categories && categories.length) { %>
+        <p class="tags">
+            <strong>Categories:</strong>
+            <% categories.forEach(category => { %>
+                <a href="/category/<%= category.category_id %>" class="tag"><%= category.category_name %></a>
+            <% }); %>
+        </p>
+    <% } %>
+
+    <p><a href="/projects">&larr; Back to all service projects</a></p>
+</main>
+
+<%- include('partials/footer') %>

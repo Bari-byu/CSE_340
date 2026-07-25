@@ -1,12 +1,8 @@
 import db from './db.js';
 
-const getAllProjects = async () => {
-    const query = `SELECT project_id, organization_id, title, description, location, project_date
-    FROM public.service_projects`;
-    const result = await db.query(query);
-    return result.rows;
-};
-
+// Retrieves the next `number_of_projects` upcoming service projects
+// (project_date >= today), soonest first, along with the name of the
+// partner organization hosting each one.
 const getUpcomingProjects = async (number_of_projects) => {
     const query = `
         SELECT
@@ -27,7 +23,9 @@ const getUpcomingProjects = async (number_of_projects) => {
     return result.rows;
 };
 
-const getProjectDetails = async (id) => {
+// Retrieves the details of a single service project, along with the name
+// of the partner organization hosting it.
+const getProjectDetails = async (projectId) => {
     const query = `
         SELECT
             sp.project_id,
@@ -41,8 +39,25 @@ const getProjectDetails = async (id) => {
         JOIN public.organizations o
             ON sp.organization_id = o.organization_id
         WHERE sp.project_id = $1`;
-    const result = await db.query(query, [id]);
-    return result.rows[0];
+    const result = await db.query(query, [projectId]);
+    return result.rows[0] || null;
 };
 
-export { getAllProjects, getUpcomingProjects, getProjectDetails };
+// Retrieves all service projects hosted by a given organization.
+const getProjectsByOrganizationId = async (organizationId) => {
+    const query = `
+        SELECT
+            project_id,
+            organization_id,
+            title,
+            description,
+            location,
+            project_date AS date
+        FROM public.service_projects
+        WHERE organization_id = $1
+        ORDER BY project_date`;
+    const result = await db.query(query, [organizationId]);
+    return result.rows;
+};
+
+export { getUpcomingProjects, getProjectDetails, getProjectsByOrganizationId };
